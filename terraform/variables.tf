@@ -22,3 +22,7 @@ variable "admin_ip" {
   description = "Your home public IP in CIDR form, e.g. 1.2.3.4/32"
   type        = string
 }
+
+variable "instance_type" {
+  default = "t3.micro"
+}
