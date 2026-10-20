@@ -26,3 +26,8 @@ variable "admin_ip" {
 variable "instance_type" {
   default = "t3.micro"
 }
+
+variable "alert_email" {
+  description = "Where response alerts are sent"
+  type        = string
+}

@@ -36,6 +36,10 @@ resource "aws_instance" "public_web" {
   }
 
   tags = { Name = "${var.project}-public-web", Tier = "web" }
+
+  lifecycle {
+    ignore_changes = [ami]
+  }
 }
 
 resource "aws_instance" "private_app" {
@@ -57,4 +61,8 @@ resource "aws_instance" "private_app" {
   }
 
   tags = { Name = "${var.project}-private-app", Tier = "app" }
+
+  lifecycle {
+    ignore_changes = [ami]
+  }
 }
