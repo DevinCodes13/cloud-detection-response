@@ -23,6 +23,7 @@ resource "aws_instance" "public_web" {
   subnet_id                   = aws_subnet.public.id
   vpc_security_group_ids      = [aws_security_group.public_web.id]
   key_name                    = aws_key_pair.admin.key_name
+  iam_instance_profile        = aws_iam_instance_profile.ssm.name
   associate_public_ip_address = true
 
   metadata_options {
@@ -48,6 +49,7 @@ resource "aws_instance" "private_app" {
   subnet_id                   = aws_subnet.private.id
   vpc_security_group_ids      = [aws_security_group.private_app.id]
   key_name                    = aws_key_pair.admin.key_name
+  iam_instance_profile        = aws_iam_instance_profile.ssm.name
   associate_public_ip_address = false
 
   metadata_options {

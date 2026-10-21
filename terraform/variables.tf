@@ -31,3 +31,9 @@ variable "alert_email" {
   description = "Where response alerts are sent"
   type        = string
 }
+
+variable "enable_ssm_endpoints" {
+  description = "Interface endpoints for Session Manager in the private subnet (~$0.72/day)"
+  type        = bool
+  default     = true
+}
