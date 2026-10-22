@@ -1,0 +1,78 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "CdrLogBuckets",
+      "Effect": "Allow",
+      "Action": [
+        "s3:CreateBucket",
+        "s3:DeleteBucket",
+        "s3:DeleteBucketPolicy",
+        "s3:Get*",
+        "s3:List*",
+        "s3:Put*",
+        "s3:DeleteObject*"
+      ],
+      "Resource": [
+        "arn:aws:s3:::cdr-*",
+        "arn:aws:s3:::cdr-*/*"
+      ]
+    },
+    {
+      "Sid": "CdrCloudTrail",
+      "Effect": "Allow",
+      "Action": "cloudtrail:*",
+      "Resource": "arn:aws:cloudtrail:us-east-1:<ACCOUNT_ID>:trail/cdr-*"
+    },
+    {
+      "Sid": "CloudTrailRead",
+      "Effect": "Allow",
+      "Action": [
+        "cloudtrail:DescribeTrails",
+        "cloudtrail:ListTrails"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "FlowLogs",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:CreateFlowLogs",
+        "ec2:DeleteFlowLogs",
+        "ec2:DescribeFlowLogs",
+        "logs:CreateLogDelivery",
+        "logs:DeleteLogDelivery"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "GuardDuty",
+      "Effect": "Allow",
+      "Action": [
+        "guardduty:CreateDetector",
+        "guardduty:GetDetector",
+        "guardduty:UpdateDetector",
+        "guardduty:DeleteDetector",
+        "guardduty:ListDetectors",
+        "guardduty:TagResource",
+        "guardduty:UntagResource",
+        "guardduty:ListTagsForResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "GuardDutyServiceRole",
+      "Effect": "Allow",
+      "Action": "iam:CreateServiceLinkedRole",
+      "Resource": "*",
+      "Condition": {
+        "StringLike": {
+          "iam:AWSServiceName": [
+            "guardduty.amazonaws.com",
+            "malware-protection.guardduty.amazonaws.com"
+          ]
+        }
+      }
+    }
+  ]
+}

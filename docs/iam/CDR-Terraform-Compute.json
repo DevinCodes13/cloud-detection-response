@@ -1,0 +1,104 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ReadOnlyEc2",
+      "Effect": "Allow",
+      "Action": "ec2:Describe*",
+      "Resource": "*"
+    },
+    {
+      "Sid": "CdrKeyPairs",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:ImportKeyPair",
+        "ec2:DeleteKeyPair"
+      ],
+      "Resource": "arn:aws:ec2:us-east-1:<ACCOUNT_ID>:key-pair/cdr-*"
+    },
+    {
+      "Sid": "LaunchServers",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:RunInstances",
+        "ec2:CreateVpcEndpoint"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "TagOnlyAtCreation",
+      "Effect": "Allow",
+      "Action": "ec2:CreateTags",
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "ec2:CreateAction": [
+            "RunInstances",
+            "ImportKeyPair",
+            "CreateVpcEndpoint"
+          ]
+        }
+      }
+    },
+    {
+      "Sid": "ManageOnlyThisProjectsServers",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:TerminateInstances",
+        "ec2:StopInstances",
+        "ec2:StartInstances",
+        "ec2:ModifyInstanceAttribute",
+        "ec2:ModifyInstanceMetadataOptions",
+        "ec2:AssociateIamInstanceProfile",
+        "ec2:DisassociateIamInstanceProfile",
+        "ec2:ReplaceIamInstanceProfileAssociation",
+        "ec2:DeleteVpcEndpoints",
+        "ec2:ModifyVpcEndpoint"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:ResourceTag/Project": "cloud-detection-response"
+        }
+      }
+    },
+    {
+      "Sid": "SwapSgsOnlyInsideCdrVpc",
+      "Effect": "Allow",
+      "Action": "ec2:ModifyNetworkInterfaceAttribute",
+      "Resource": "arn:aws:ec2:us-east-1:<ACCOUNT_ID>:network-interface/*",
+      "Condition": {
+        "ArnEquals": {
+          "ec2:Vpc": "arn:aws:ec2:us-east-1:<ACCOUNT_ID>:vpc/<CDR_VPC_ID>"
+        }
+      }
+    },
+    {
+      "Sid": "AttachOnlyProjectSgs",
+      "Effect": "Allow",
+      "Action": "ec2:ModifyNetworkInterfaceAttribute",
+      "Resource": "arn:aws:ec2:us-east-1:<ACCOUNT_ID>:security-group/*",
+      "Condition": {
+        "StringEquals": {
+          "aws:ResourceTag/Project": "cloud-detection-response"
+        }
+      }
+    },
+    {
+      "Sid": "RemoveTagsButNeverTheProjectTag",
+      "Effect": "Allow",
+      "Action": "ec2:DeleteTags",
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:ResourceTag/Project": "cloud-detection-response"
+        },
+        "ForAllValues:StringNotEquals": {
+          "aws:TagKeys": [
+            "Project"
+          ]
+        }
+      }
+    }
+  ]
+}

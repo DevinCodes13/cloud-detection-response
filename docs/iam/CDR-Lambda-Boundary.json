@@ -1,0 +1,51 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "Logs",
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "Ec2Respond",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:Describe*",
+        "ec2:ModifyInstanceAttribute",
+        "ec2:CreateSnapshot",
+        "ec2:CreateTags",
+        "ec2:DisassociateIamInstanceProfile"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "IamRespond",
+      "Effect": "Allow",
+      "Action": [
+        "iam:ListAccessKeys",
+        "iam:UpdateAccessKey"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "S3Respond",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetBucketPublicAccessBlock",
+        "s3:PutBucketPublicAccessBlock"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "Notify",
+      "Effect": "Allow",
+      "Action": "sns:Publish",
+      "Resource": "arn:aws:sns:us-east-1:<ACCOUNT_ID>:cdr-*"
+    }
+  ]
+}

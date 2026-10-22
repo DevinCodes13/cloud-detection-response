@@ -1,0 +1,29 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "SessionManagerOnly",
+      "Effect": "Allow",
+      "Action": [
+        "ssm:UpdateInstanceInformation",
+        "ssm:ListAssociations",
+        "ssm:ListInstanceAssociations",
+        "ssm:DescribeAssociation",
+        "ssm:GetDocument",
+        "ssm:DescribeDocument",
+        "ssm:GetDeployablePatchSnapshotForInstance",
+        "ssm:GetManifest",
+        "ssm:GetParameter",
+        "ssm:GetParameters",
+        "ssm:PutInventory",
+        "ssm:PutComplianceItems",
+        "ssm:PutConfigurePackageResult",
+        "ssm:UpdateAssociationStatus",
+        "ssm:UpdateInstanceAssociationStatus",
+        "ssmmessages:*",
+        "ec2messages:*"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
