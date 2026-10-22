@@ -1,34 +1,42 @@
 # Screenshot index
 
 Every file here was renamed from its original capture and checked for
-sensitive data. Blurred everywhere it appeared: the AWS account number,
-public IPs, the alert email address, and access key IDs.
+sensitive data. Blurred wherever it appeared: the AWS account number,
+public IPs (home and server), the alert email address, access key IDs, and
+the browser version in a CloudTrail event.
 
-**README** marks the images embedded in the main README.
+Numbered in the order they were taken. **README** marks the images
+embedded in the main README.
 
-## Phase 1 — Baseline
+## Phase 1 — Baseline (Oct 12–15)
 
 | File | Shows | |
 |---|---|---|
-| `p1-02-network-plan-11-to-add.png` | network plan 11 to add | **README** |
-| `p1-03-network-apply-11-added.png` | network apply 11 added |  |
-| `p1-04-cdr-vpc-console.png` | cdr vpc console |  |
-| `p1-05-incident-iam-policy-quota-exceeded.png` | incident iam policy quota exceeded |  |
-| `p1-06-cdr-terraform-group-2-policies.png` | cdr terraform group 2 policies |  |
-| `p1-07-logging-plan-10-to-add.png` | logging plan 10 to add |  |
-| `p1-08-logging-apply-trail-flowlog.png` | logging apply trail flowlog |  |
-| `p1-09-cloudtrail-digests-all-regions.png` | cloudtrail digests all regions | **README** |
-| `p1-10-trail-islogging-true.png` | trail islogging true |  |
-| `p1-11-compute-plan-3-to-add.png` | compute plan 3 to add |  |
-| `p1-12-cdr-terraform-group-3-policies.png` | cdr terraform group 3 policies |  |
-| `p1-13-compute-apply-first-attempt.png` | compute apply first attempt |  |
-| `p1-14-compute-apply-rsa-key.png` | compute apply rsa key |  |
-| `p1-15-ssh-public-web-login.png` | ssh public web login |  |
-| `p1-16-private-app-hop-curl-timeout.png` | private app hop curl timeout | **README** |
-| `p1-17-ec2-instances-running.png` | ec2 instances running |  |
-| `p1-18-flow-log-files-arriving.png` | flow log files arriving |  |
+| `p1-01-init-before-backend-file.png` | init before backend file |  |
+| `p1-02-state-bucket-versioning-enabled.png` | state bucket versioning enabled |  |
+| `p1-03-incident-iam-policy-quota-exceeded.png` | incident iam policy quota exceeded | **README** |
+| `p1-04-cdr-terraform-group-created.png` | cdr terraform group created |  |
+| `p1-05-cdr-terraform-group-state-policy.png` | cdr terraform group state policy |  |
+| `p1-06-terraform-init-s3-backend.png` | terraform init s3 backend | **README** |
+| `p1-07-first-push-to-github.png` | first push to github |  |
+| `p1-08-network-plan-11-to-add.png` | network plan 11 to add | **README** |
+| `p1-09-network-apply-11-added.png` | network apply 11 added |  |
+| `p1-10-cdr-vpc-console.png` | cdr vpc console |  |
+| `p1-11-cdr-terraform-group-2-policies.png` | cdr terraform group 2 policies |  |
+| `p1-12-logging-plan-10-to-add.png` | logging plan 10 to add |  |
+| `p1-13-logging-apply-trail-flowlog.png` | logging apply trail flowlog |  |
+| `p1-14-cloudtrail-digests-all-regions.png` | cloudtrail digests all regions | **README** |
+| `p1-15-trail-islogging-true.png` | trail islogging true |  |
+| `p1-16-compute-plan-3-to-add.png` | compute plan 3 to add |  |
+| `p1-17-cdr-terraform-group-3-policies.png` | cdr terraform group 3 policies |  |
+| `p1-18-compute-apply-first-attempt.png` | compute apply first attempt |  |
+| `p1-19-compute-apply-rsa-key.png` | compute apply rsa key |  |
+| `p1-20-ssh-public-web-login.png` | ssh public web login |  |
+| `p1-21-private-app-hop-curl-timeout.png` | private app hop curl timeout | **README** |
+| `p1-22-ec2-instances-running.png` | ec2 instances running |  |
+| `p1-23-flow-log-files-arriving.png` | flow log files arriving |  |
 
-## Phase 2 — Automated response
+## Phase 2 — Automated response (Oct 20)
 
 | File | Shows | |
 |---|---|---|
@@ -50,7 +58,7 @@ public IPs, the alert email address, and access key IDs.
 | `p2-16-real-finding-details.png` | real finding details |  |
 | `p2-17-ssh-timeout-quarantined.png` | ssh timeout quarantined | **README** |
 | `p2-18-quarantine-tags.png` | quarantine tags | **README** |
-| `p2-19-findings-archived.png` | findings archived | **README** |
+| `p2-19-findings-archived.png` | findings archived |  |
 | `p2-20-restore-plan-1-to-change.png` | restore plan 1 to change | **README** |
 | `p2-21-incident-restore-denied.png` | incident restore denied | **README** |
 | `p2-22-compute-policy-updated.png` | compute policy updated |  |
@@ -72,29 +80,48 @@ public IPs, the alert email address, and access key IDs.
 | `p2-38-s3-relocked-all-true.png` | s3 relocked all true | **README** |
 | `p2-39-lock-s3-lambda-logs.png` | lock s3 lambda logs |  |
 
-## Phase 3 — Zero Trust
+## Phase 3 — Zero Trust (Oct 20 evening, Oct 22)
 
 | File | Shows | |
 |---|---|---|
-| `p3-01-incident-adminwithmfa-explicit-deny.png` | incident adminwithmfa explicit deny | **README** |
-| `p3-02-endpoints-back-on-apply.png` | endpoints back on apply |  |
-| `p3-03-fleet-manager-both-online.png` | fleet manager both online |  |
-| `p3-04-ssh-timeout-zero-trust.png` | ssh timeout zero trust | **README** |
-| `p3-05-ssm-private-app-dnf-via-s3.png` | ssm private app dnf via s3 | **README** |
-| `p3-06-strip-profile-plan.png` | strip profile plan |  |
-| `p3-07-decoy-via-session-manager.png` | decoy via session manager |  |
-| `p3-08-real-finding-again.png` | real finding again |  |
-| `p3-09-quarantined-no-iam-role.png` | quarantined no iam role | **README** |
-| `p3-10-quarantine-tags-previous-profile.png` | quarantine tags previous profile | **README** |
-| `p3-11-ssm-denied-no-instance-role.png` | ssm denied no instance role | **README** |
-| `p3-12-fleet-manager-connection-lost.png` | fleet manager connection lost |  |
-| `p3-13-restored-role-and-zt-sg.png` | restored role and zt sg |  |
-| `p3-14-restored-tags.png` | restored tags |  |
+| `p3-01-iam-dashboard-mfa-recommendations.png` | iam dashboard mfa recommendations |  |
+| `p3-02-incident-adminwithmfa-explicit-deny.png` | incident adminwithmfa explicit deny | **README** |
+| `p3-03-root-findings-archived.png` | root findings archived | **README** |
+| `p3-04-cloudtrail-root-consolelogin-mfa-yes.png` | cloudtrail root consolelogin mfa yes |  |
+| `p3-05-adminwithmfa-before.png` | adminwithmfa before | **README** |
+| `p3-06-adminwithmfa-after.png` | adminwithmfa after | **README** |
+| `p3-07-ec2-boundary-created.png` | ec2 boundary created |  |
+| `p3-08-lambda-boundary-updated.png` | lambda boundary updated |  |
+| `p3-09-terraform-response-policy-updated.png` | terraform response policy updated |  |
+| `p3-10-terraform-compute-policy-updated.png` | terraform compute policy updated |  |
+| `p3-11-cdr-terraform-group-policies.png` | cdr terraform group policies |  |
+| `p3-12-ssm-plan-8-to-add.png` | ssm plan 8 to add |  |
+| `p3-13-ssm-apply-8-added.png` | ssm apply 8 added |  |
+| `p3-14-fleet-manager-public-only.png` | fleet manager public only |  |
+| `p3-15-private-endpoint-path-checks.png` | private endpoint path checks |  |
+| `p3-16-fleet-manager-both-online.png` | fleet manager both online |  |
+| `p3-17-plan-ssh-rules-removed.png` | plan ssh rules removed | **README** |
+| `p3-18-zero-trust-apply.png` | zero trust apply |  |
+| `p3-19-ssh-timeout-zero-trust.png` | ssh timeout zero trust |  |
+| `p3-20-ssm-private-app-dnf-via-s3.png` | ssm private app dnf via s3 |  |
+| `p3-21-ssm-private-app-curl-timeout.png` | ssm private app curl timeout |  |
+| `p3-22-endpoints-back-on-apply.png` | endpoints back on apply |  |
+| `p3-23-fleet-manager-both-online.png` | fleet manager both online |  |
+| `p3-24-ssh-timeout-zero-trust.png` | ssh timeout zero trust | **README** |
+| `p3-25-ssm-private-app-dnf-via-s3.png` | ssm private app dnf via s3 | **README** |
+| `p3-26-strip-profile-plan.png` | strip profile plan |  |
+| `p3-27-decoy-via-session-manager.png` | decoy via session manager |  |
+| `p3-28-real-finding-again.png` | real finding again |  |
+| `p3-29-quarantined-no-iam-role.png` | quarantined no iam role | **README** |
+| `p3-30-quarantine-tags-previous-profile.png` | quarantine tags previous profile | **README** |
+| `p3-31-ssm-denied-no-instance-role.png` | ssm denied no instance role | **README** |
+| `p3-32-fleet-manager-connection-lost.png` | fleet manager connection lost |  |
+| `p3-33-restored-role-and-zt-sg.png` | restored role and zt sg |  |
+| `p3-34-restored-tags.png` | restored tags |  |
 
-## Not captured
+## Notes
 
-- The first `terraform init` against the S3 backend (Oct 12)
-- The Oct 20 evening Phase 3 session: the `terraform plan` removing the SSH
-  rules (included in the README as a text excerpt from the real output),
-  the CloudTrail `ConsoleLogin` event showing `MFAUsed: Yes`, and the
-  AdminWithMFA before/after JSON
+- `p3-04` is the root account's break-glass sign-in (MFA used), not the IAM
+  admin's.
+- The README's Results table still has one `TODO`: detection-to-containment
+  time, to be filled from GuardDuty and Lambda log timestamps.

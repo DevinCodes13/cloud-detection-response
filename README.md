@@ -120,6 +120,8 @@ it was reused with versioning switched on and state stored under a `cdr/`
 key. Terraform runs as a dedicated IAM user whose project permissions live
 in their own `CDR-Terraform` group (see the troubleshooting log for why).
 
+![terraform init against the S3 backend](docs/screenshots/p1-06-terraform-init-s3-backend.png)
+
 ### The network
 
 A VPC with a public and a private subnet in one availability zone. The
@@ -128,7 +130,7 @@ no internet. The VPC's built-in *default* security group, which normally
 lets everything inside the VPC talk freely, is emptied by Terraform so
 nothing can accidentally use it.
 
-![terraform plan — 11 resources](docs/screenshots/p1-02-network-plan-11-to-add.png)
+![terraform plan — 11 resources](docs/screenshots/p1-08-network-plan-11-to-add.png)
 
 ### The cameras and the guard
 
@@ -145,7 +147,7 @@ rest, HTTPS-only, a 90-day lifecycle, and a bucket policy that lets
 CloudTrail and Flow Logs write *only* into their own prefixes. CloudTrail's
 log file validation writes signed digest files so tampering is provable.
 
-![CloudTrail digests arriving from every region](docs/screenshots/p1-09-cloudtrail-digests-all-regions.png)
+![CloudTrail digests arriving from every region](docs/screenshots/p1-14-cloudtrail-digests-all-regions.png)
 *Digest files arriving from every AWS region — the multi-region trail and
 log file validation both working.*
 
@@ -161,7 +163,7 @@ classic SSRF-to-credential-theft attack — and both have encrypted disks.
 
 Network segmentation was proven, not assumed:
 
-![private-app cannot reach the internet](docs/screenshots/p1-16-private-app-hop-curl-timeout.png)
+![private-app cannot reach the internet](docs/screenshots/p1-21-private-app-hop-curl-timeout.png)
 *From the private tier, `curl https://checkip.amazonaws.com` times out.
 There is no road out.*
 
@@ -291,13 +293,17 @@ root. Root was used one final time as a deliberate break-glass action to
 reset the IAM administrator's credentials; everything since has been done
 as an MFA-protected IAM admin.
 
-![GuardDuty flagging root credential usage](docs/screenshots/p2-19-findings-archived.png)
+![Root credential findings, archived](docs/screenshots/p3-03-root-findings-archived.png)
 
 That switch exposed a bug that had been misdiagnosed since the hardening
 project — see *"AdminWithMFA never checked for MFA"* in the troubleshooting
 log. The fix replaced it with a policy that denies everything without MFA,
 and denies **everyone** — admins included — the ability to stop CloudTrail
 or delete GuardDuty.
+
+| Before | After |
+|---|---|
+| ![AdminWithMFA before](docs/screenshots/p3-05-adminwithmfa-before.png) | ![AdminWithMFA after](docs/screenshots/p3-06-adminwithmfa-after.png) |
 
 ### 3.2 — Session Manager instead of SSH
 
@@ -320,7 +326,7 @@ It was rolled out in two stages, deliberately: **add Session Manager,
 prove it works, and only then remove SSH** — so a failure could never
 lock me out.
 
-![Session Manager into the private server](docs/screenshots/p3-05-ssm-private-app-dnf-via-s3.png)
+![Session Manager into the private server](docs/screenshots/p3-25-ssm-private-app-dnf-via-s3.png)
 *A Session Manager shell (`sh-5.2$`) on the private server — no public IP, no
 internet route, no SSH — still receiving OS updates through the free S3
 gateway endpoint.*
@@ -332,33 +338,11 @@ gateway endpoint.*
 | `cdr-public-web` | **none** | TCP 443 only |
 | `cdr-private-app` | **none** | TCP 443 to the SSM endpoints' security group, and TCP 443 to the S3 prefix list |
 
-The plan, trimmed to the lines that matter — the SSH rules coming out, and
-the safe *create-then-destroy* order:
+The plan: both SSH rules coming out, and the security groups replaced in
+the safe *create-then-destroy* order (`+/-`):
 
-```
-+/- create replacement and then destroy
-
-  # aws_security_group.public_web must be replaced
-      ~ ingress = [
-          - {
-              - cidr_blocks = ["<home IP>/32"]
-              - description = "SSH from admin home IP"
-              - from_port   = 22
-            },
-        ]
-      ~ name = "cdr-public-web" -> "cdr-public-web-zt" # forces replacement
-
-  # aws_security_group.private_app must be replaced
-      ~ ingress = [
-          - {
-              - description = "SSH from public web tier only"
-              - from_port   = 22
-            },
-        ]
-
-Plan: 2 to add, 2 to change, 2 to destroy.
-```
-![SSH now times out](docs/screenshots/p3-04-ssh-timeout-zero-trust.png)
+![SSH rules removed in the plan](docs/screenshots/p3-17-plan-ssh-rules-removed.png)
+![SSH now times out](docs/screenshots/p3-24-ssh-timeout-zero-trust.png)
 
 ### 3.4 — Quarantine takes the badge, not just the door
 
@@ -369,11 +353,11 @@ instance profile**, so anything running on the box loses its AWS
 credentials and long-lived connections cannot refresh. The previous profile
 is recorded in a tag, and `terraform apply` restores both.
 
-![Tags recording the removed profile](docs/screenshots/p3-10-quarantine-tags-previous-profile.png)
-![Session Manager refused: no instance role](docs/screenshots/p3-11-ssm-denied-no-instance-role.png)
+![Tags recording the removed profile](docs/screenshots/p3-30-quarantine-tags-previous-profile.png)
+![Session Manager refused: no instance role](docs/screenshots/p3-31-ssm-denied-no-instance-role.png)
 *The proof the credentials are really gone: Session Manager itself now
 fails with `EC2RoleRequestError: no EC2 instance role found`.*
-![IAM role blank while quarantined](docs/screenshots/p3-09-quarantined-no-iam-role.png)
+![IAM role blank while quarantined](docs/screenshots/p3-29-quarantined-no-iam-role.png)
 
 A deliberate side effect: quarantine cuts off Session Manager too.
 Investigation happens on the forensic snapshot, never on the live,
@@ -560,6 +544,8 @@ issues is a meaningful part of what this project demonstrates.
 - **IAM users can hold at most 10 managed policies.** The Terraform user
   was already full. Project permissions moved into a dedicated
   `CDR-Terraform` group, which also makes them easy to remove later.
+
+  ![Policy quota exceeded](docs/screenshots/p1-03-incident-iam-policy-quota-exceeded.png)
 - **The wrong identity, twice.** The default CLI profile is a deliberately
   weak developer user; `AWS_PROFILE` resets on every login, so Terraform
   kept arriving as that user and being denied — least privilege doing its
@@ -611,8 +597,8 @@ issues is a meaningful part of what this project demonstrates.
 - **GuardDuty caught me.** Console work done as root raised
   `Policy:IAMUser/RootCredentialUsage` — the detector working exactly as
   intended. Root is now break-glass only.
-- **AdminWithMFA never checked for MFA.** With MFA set up and CloudTrail
-  showing `MFAUsed: Yes`, `iam:CreatePolicy` was still explicitly denied.
+- **AdminWithMFA never checked for MFA.** With MFA set up and a fresh,
+  MFA-verified sign-in, `iam:CreatePolicy` was still explicitly denied.
   Reading the policy showed why: its deny statement had **no condition at
   all**, and the rest of it was a developer template (a tag rule for
   `Owner=developer` and an unfilled bucket placeholder). This **corrects
@@ -622,7 +608,7 @@ issues is a meaningful part of what this project demonstrates.
   the same deny without the root cause being traced. Replaced with a real
   MFA-gated policy.
 
-  ![Explicit deny from AdminWithMFA](docs/screenshots/p3-01-incident-adminwithmfa-explicit-deny.png)
+  ![Explicit deny from AdminWithMFA](docs/screenshots/p3-02-incident-adminwithmfa-explicit-deny.png)
 - **A stale IP connected to a stranger.** After a stop/start, Terraform's
   outputs still held the old public IP; it had already been reassigned,
   and another customer's host refused the connection. Refresh state before
