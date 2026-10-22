@@ -48,13 +48,13 @@ resource "aws_iam_role_policy" "isolate_ec2" {
       {
         Sid      = "Describe"
         Effect   = "Allow"
-        Action   = "ec2:DescribeInstances"
+        Action   = ["ec2:DescribeInstances", "ec2:DescribeIamInstanceProfileAssociations"]
         Resource = "*"
       },
       {
         Sid      = "QuarantineOnlyProjectInstances"
         Effect   = "Allow"
-        Action   = "ec2:ModifyInstanceAttribute"
+        Action   = ["ec2:ModifyInstanceAttribute", "ec2:DisassociateIamInstanceProfile"]
         Resource = "*"
         Condition = {
           StringEquals = { "aws:ResourceTag/Project" = "cloud-detection-response" }

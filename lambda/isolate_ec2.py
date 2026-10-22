@@ -4,9 +4,11 @@ CDR auto-response: isolate an EC2 instance flagged by GuardDuty.
 1. Ignore GuardDuty sample findings (notify only).
 2. Only act on instances tagged Project=cloud-detection-response.
 3. Swap all security groups for the no-traffic quarantine group.
-4. Snapshot every attached volume for forensics.
-5. Tag the instance with what happened and its previous security groups.
-6. Email the alert topic with a summary.
+4. Remove the instance's IAM role (instance profile) so any attacker on the
+   box loses its AWS credentials, and long-lived connections can't refresh.
+5. Snapshot every attached volume for forensics.
+6. Tag the instance with what happened and what it had before.
+7. Email the alert topic with a summary.
 """
 import json
 import os
@@ -23,6 +25,22 @@ PROJECT_TAG = "cloud-detection-response"
 
 def notify(subject, body):
     sns.publish(TopicArn=TOPIC_ARN, Subject=subject[:100], Message=body)
+
+
+def strip_instance_profile(instance_id):
+    """Disassociate any IAM instance profile. Returns the profile name removed, or None."""
+    associations = ec2.describe_iam_instance_profile_associations(
+        Filters=[
+            {"Name": "instance-id", "Values": [instance_id]},
+            {"Name": "state", "Values": ["associated"]},
+        ]
+    )["IamInstanceProfileAssociations"]
+
+    removed = None
+    for assoc in associations:
+        removed = assoc["IamInstanceProfile"]["Arn"].split("/")[-1]
+        ec2.disassociate_iam_instance_profile(AssociationId=assoc["AssociationId"])
+    return removed
 
 
 def handler(event, context):
@@ -54,9 +72,14 @@ def handler(event, context):
     if tags.get("cdr-status") == "quarantined":
         return {"action": "none", "reason": "already quarantined"}
 
+    # 1. Network isolation
     old_sgs = [g["GroupId"] for g in instance["SecurityGroups"]]
     ec2.modify_instance_attribute(InstanceId=instance_id, Groups=[QUARANTINE_SG])
 
+    # 2. Credential isolation
+    removed_profile = strip_instance_profile(instance_id)
+
+    # 3. Evidence
     snapshots = []
     for mapping in instance.get("BlockDeviceMappings", []):
         volume_id = mapping["Ebs"]["VolumeId"]
@@ -73,16 +96,20 @@ def handler(event, context):
         )
         snapshots.append(snap["SnapshotId"])
 
+    # 4. Record what changed
     ec2.create_tags(Resources=[instance_id], Tags=[
         {"Key": "cdr-status", "Value": "quarantined"},
         {"Key": "cdr-finding", "Value": ftype[:255]},
         {"Key": "cdr-previous-sgs", "Value": ",".join(old_sgs)},
+        {"Key": "cdr-previous-profile", "Value": removed_profile or "none"},
     ])
 
     notify(f"[CDR] Quarantined {instance_id}",
            f"Finding: {ftype}\nSeverity: {severity}\nInstance: {instance_id}\n"
            f"Previous security groups: {', '.join(old_sgs)}\n"
            f"Now in quarantine group: {QUARANTINE_SG}\n"
+           f"IAM role removed: {removed_profile or 'none attached'}\n"
            f"Forensic snapshots: {', '.join(snapshots) or 'none'}\n\n"
            "To restore: investigate first, then run terraform apply.")
-    return {"action": "quarantined", "instance": instance_id, "snapshots": snapshots}
+    return {"action": "quarantined", "instance": instance_id,
+            "profile_removed": removed_profile, "snapshots": snapshots}
